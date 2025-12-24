@@ -28,7 +28,7 @@
 
 ```bash
 cd ~/catkin_ws/src
-git clone https://github.com/YOUR_USERNAME/FAPP.git
+git clone https://github.com/yuxuancong/FAPP-experiments.git
 cd ..
 catkin build
 source devel/setup.bash
