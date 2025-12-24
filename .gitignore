@@ -1,0 +1,31 @@
+# Build outputs
+build/
+devel/
+logs/
+install/
+
+# Catkin tools
+.catkin_tools/
+.catkin_workspace
+
+# Python
+*.pyc
+__pycache__/
+.venv/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Data files
+*.csv
+*.bag
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

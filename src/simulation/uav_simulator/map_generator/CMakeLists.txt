@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   pcl_conversions
+  obj_state_msgs
 )
 find_package(PCL 1.10 REQUIRED)
 find_package(Eigen3 REQUIRED)

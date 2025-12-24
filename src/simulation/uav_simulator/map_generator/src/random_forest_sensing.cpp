@@ -19,6 +19,8 @@
 #include <Eigen/Eigen>
 #include <random>
 #include <pcl/search/impl/search.hpp>
+#include <obj_state_msgs/ObjectsStates.h>
+#include <obj_state_msgs/State.h>
 
 #ifndef PCL_NO_PRECOMPILE
   #include <pcl/impl/instantiate.hpp>
@@ -47,6 +49,7 @@ ros::Publisher _all_map_pub;
 ros::Publisher _all_map_static_obs_pub;
 ros::Publisher _all_map_wall_pub;
 ros::Publisher _obj_cloud_pub;
+ros::Publisher _obj_gt_pub;  // 物体真值发布器
 ros::Publisher click_map_pub_;
 ros::Subscriber _odom_sub;
 
@@ -100,6 +103,10 @@ vector<pcl::PointCloud<pcl::PointXYZ>> obj_clusters;
 void ObjUpdate(double t)
 {
   // cout<<"start"<<endl;
+  obj_state_msgs::ObjectsStates gt_states;  // 真值状态
+  gt_states.header.stamp = ros::Time::now();
+  gt_states.header.frame_id = "world";
+
   for (int i = 0; i < _moving_obs_num; i++)
   {
     // pos += vel;
@@ -126,6 +133,17 @@ void ObjUpdate(double t)
       obj_vel_amp_x[i] = -obj_vel_amp_x[i];
       obj_vel_amp_y[i] = -obj_vel_amp_y[i];
     }
+
+    // 发布真值状态
+    obj_state_msgs::State state;
+    state.header.stamp = ros::Time::now();
+    state.position.x = obj_pos[i](0);
+    state.position.y = obj_pos[i](1);
+    state.position.z = 1.0;  // 固定高度
+    state.velocity.x = vx;
+    state.velocity.y = vy;
+    state.velocity.z = 0.0;
+    gt_states.states.push_back(state);
   }
 
   // for (int i = 0; i < 5; i++)
@@ -163,6 +181,9 @@ void ObjUpdate(double t)
   objCloud_pcd.header.frame_id = "world";
   objCloud_pcd.header.stamp = ros::Time::now();
   _obj_cloud_pub.publish(objCloud_pcd);
+  
+  // 发布物体真值状态
+  _obj_gt_pub.publish(gt_states);
 }
 
 void RandomObjGenerate()
@@ -657,6 +678,7 @@ int main(int argc, char **argv)
       n.advertise<sensor_msgs::PointCloud2>("/pcl_render_node/local_map", 1);
 
   _obj_cloud_pub = n.advertise<sensor_msgs::PointCloud2>("/map_generator/obj_cloud", 1);
+  _obj_gt_pub = n.advertise<obj_state_msgs::ObjectsStates>("/map_generator/obj_gt", 10);  // 物体真值
 
   n.param("map/x_size", _x_size, 50.0);
   n.param("map/y_size", _y_size, 50.0);

@@ -78,3 +78,11 @@ target_link_libraries(mapping_node
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
   )
+
+# KF compare node (standard vs adaptive KF) using ground-truth from map_generator
+add_executable(kf_compare_node
+  src/kf_compare_node.cpp
+)
+target_link_libraries(kf_compare_node
+  ${catkin_LIBRARIES}
+)
